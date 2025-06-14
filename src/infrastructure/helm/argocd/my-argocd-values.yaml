@@ -1,0 +1,11 @@
+global:
+  domain: argocd.rancher.localhost
+
+server:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+
+configs:
+  params:
+    server.insecure: true
