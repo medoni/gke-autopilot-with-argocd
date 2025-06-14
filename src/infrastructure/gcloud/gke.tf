@@ -45,4 +45,8 @@ resource "google_container_cluster" "autopilot" {
   vertical_pod_autoscaling {
     enabled = true
   }
+
+  lifecycle {
+    ignore_changes = all # Just bootstrap & forget and let ArgoCD do it's job.
+  }
 }

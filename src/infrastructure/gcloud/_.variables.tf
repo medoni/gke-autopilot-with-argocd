@@ -54,3 +54,32 @@ variable "node_service_account" {
   type        = string
   default     = null  # Will use the default compute service account
 }
+
+variable "dns_zone_id" {
+  description = "The zone id (DNS) to add sub domains"
+  type        = string
+}
+
+variable "argocd_domain" {
+  description = "Public domain for argocd"
+  type        = string
+}
+
+variable "argocd_version" {
+  description = "Version of ArgoCD to deploy"
+  type        = string
+  default     = "8.0.17"
+}
+
+variable "argocd_repo_git_url" {
+  description = "..." # TODO:
+  type        = string
+  default     = "https://github.com/example"
+}
+
+variable "argocd_repo_git_pat" {
+  description = "..." # TODO:
+  type        = string
+  sensitive   = true
+  default     = "pat1234"
+}
