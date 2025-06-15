@@ -13,6 +13,13 @@ resource "helm_release" "argocd" {
     value = var.argocd_domain
   }
 
+
+
+  set {
+    name = "configs.params.server\\.insecure"
+    value = "true"
+  }
+
   set {
     name = "server.ingress.enabled"
     value = "true"
@@ -21,6 +28,46 @@ resource "helm_release" "argocd" {
   set {
     name = "server.ingress.controller"
     value = "gke"
+  }
+
+  set {
+    name = "server.ingress.gke.backendConfig.healthCheck.checkIntervalSec"
+    value = "30"
+  }
+
+  set {
+    name = "server.ingress.gke.backendConfig.healthCheck.timeoutSec"
+    value = "5"
+  }
+
+  set {
+    name = "server.ingress.gke.backendConfig.healthCheck.healthyThreshold"
+    value = "1"
+  }
+
+  set {
+    name = "server.ingress.gke.backendConfig.healthCheck.unhealthyThreshold"
+    value = "2"
+  }
+
+  set {
+    name = "server.ingress.gke.backendConfig.healthCheck.type"
+    value = "HTTP"
+  }
+
+  set {
+    name = "server.ingress.gke.backendConfig.healthCheck.port"
+    value = "8080"
+  }
+
+  set {
+    name = "server.ingress.gke.frontendConfig.redirectToHttps.enabled"
+    value = "true"
+  }
+
+  set {
+    name = "server.ingress.gke.managedCertificate.enabled"
+    value = "true"
   }
 
   depends_on = [
