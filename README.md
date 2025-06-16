@@ -1,6 +1,12 @@
 # GKE Autopilot with Spot Instances Terraform Module
 
-This Terraform module deploys a Google Kubernetes Engine (GKE) cluster in Autopilot mode with spot instances for cost optimization. The module is designed to provide a production-ready Kubernetes cluster with sensible defaults while maintaining flexibility for customization.
+> [!NOTE]
+> This README is automatically generated using GitHub Copilot with Claude Sonnet 3.5.
+
+> [!WARNING]
+> 🚧 This project is currently under active development and is not yet ready for production use. Features may be incomplete, and breaking changes can occur without notice. Use at your own risk.
+
+This Terraform module deploys a Google Kubernetes Engine (GKE) cluster in Autopilot mode with spot instances for cost optimization and integrates ArgoCD for GitOps practices. The module is designed to provide a production-ready Kubernetes cluster with sensible defaults while maintaining flexibility for customization.
 
 ## Features
 
@@ -10,6 +16,10 @@ This Terraform module deploys a Google Kubernetes Engine (GKE) cluster in Autopi
 - 📈 Vertical pod autoscaling enabled
 - 🌍 Default region in Frankfurt (europe-west3)
 - 🔧 Configurable maintenance window (default: 3 AM)
+- 🛥️ ArgoCD integration for GitOps workflow
+- 🌐 Automatic DNS configuration
+- 🔒 Managed SSL certificates
+- 🚦 Health checks and HTTPS redirection
 
 ## Prerequisites
 
@@ -18,6 +28,18 @@ This Terraform module deploys a Google Kubernetes Engine (GKE) cluster in Autopi
 - A Google Cloud Project with required APIs enabled:
   - Container API (container.googleapis.com)
   - Compute Engine API (compute.googleapis.com)
+  - DNS API (dns.googleapis.com)
+- A GitHub repository for GitOps (for ArgoCD)
+- A domain name for ArgoCD UI (optional)
+
+## Architecture
+
+This module sets up:
+1. A GKE Autopilot cluster with spot instances
+2. ArgoCD deployment with Helm
+3. DNS configuration for ArgoCD UI (optional)
+4. Managed SSL certificates for secure access
+5. Health checks and HTTPS redirection for the ingress
 
 ## Usage
 
@@ -64,6 +86,11 @@ terraform apply
 | subnetwork | The subnetwork to host the cluster | string | default | no |
 | release_channel | The release channel of the GKE cluster (RAPID, REGULAR, STABLE) | string | REGULAR | no |
 | node_service_account | The Google Cloud Platform Service Account for nodes | string | null | no |
+| argocd_version | Version of ArgoCD to deploy | string | 8.0.17 | no |
+| argocd_domain | Domain for ArgoCD UI access | string | - | yes |
+| dns_zone_id | The ID of the DNS zone for ArgoCD domain | string | - | yes |
+| argocd_repo_git_url | URL of the Git repository for ArgoCD | string | - | yes |
+| argocd_repo_git_pat | Personal Access Token for Git repository | string | - | yes |
 
 ## Outputs
 
@@ -77,6 +104,35 @@ terraform apply
 ## Maintenance Window
 
 The cluster is configured with a daily maintenance window at 3 AM. You can modify this in the `main.tf` file if needed.
+
+## ArgoCD Access
+
+After the cluster is deployed, ArgoCD will be accessible through:
+
+1. Domain access (if configured):
+   - Access ArgoCD UI at: `https://<your-argocd-domain>`
+   - SSL is automatically managed through GCP-managed certificates
+
+2. Port forwarding (without domain):
+```powershell
+kubectl port-forward service/argocd-server -n argocd 8080:443
+```
+Then access ArgoCD UI at: `http://localhost:8080`
+
+To get the initial admin password:
+```powershell
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | ConvertFrom-Base64
+```
+
+## GitOps Setup
+
+ArgoCD is configured with:
+- Automatic repository credentials setup
+- Health checks for the UI
+- HTTPS redirection
+- Managed SSL certificates (when domain is configured)
+
+To add applications to ArgoCD, create ApplicationSet or Application resources in your Git repository.
 
 ## Security
 
