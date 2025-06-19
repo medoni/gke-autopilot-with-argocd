@@ -8,67 +8,70 @@ resource "helm_release" "argocd" {
   version          = var.argocd_version
   wait             = false
 
-  set {
-    name = "global.domain"
-    value = var.argocd_domain
-  }
+  values = [
+    yamlencode({
+      global = {
+        domain = var.argocd_domain
+      }
+
+      configs = {
+        params = {
+          "server.insecure" = true
+        }
+
+        rbac = {
+          "policy.csv" = file("argocd.rbac.csv")
+          scopes = "[email]"
+        }
+
+        cm = {
+          "dex.config" = yamlencode({
+            connectors = [{
+              type = "oidc"
+              id = "google"
+              name = "Google"
+              config = {
+                issuer = "https://accounts.google.com"
+                clientID = var.google_auth_client_id
+                clientSecret = "$google.clientSecret"
+                requestedScopes = ["openid", "profile", "email"]
+                requestedIDTokenClaims = {
+                  email = {
+                    essential = true
+                  }
+                }
+              }
+            }]
+          })
+        }
+      }
+
+      server = {
+        ingress = {
+          enabled = true
+          controller = "gke"
+
+          gke = {
+            backendConfig = {
+              healthCheck = {
+                type = "http"
+                checkIntervalSec = 30
+                timeoutSec = 5
+                healthyThreshold = 1
+                unhealthyThreshold = 2
+              }
+            }
+
+            managedCertificate = {
+              enabled = true
+            }
+          }
+        }
+      }
 
 
-
-  set {
-    name = "configs.params.server\\.insecure"
-    value = "true"
-  }
-
-  set {
-    name = "server.ingress.enabled"
-    value = "true"
-  }
-
-  set {
-    name = "server.ingress.controller"
-    value = "gke"
-  }
-
-  set {
-    name = "server.ingress.gke.backendConfig.healthCheck.checkIntervalSec"
-    value = "30"
-  }
-
-  set {
-    name = "server.ingress.gke.backendConfig.healthCheck.timeoutSec"
-    value = "5"
-  }
-
-  set {
-    name = "server.ingress.gke.backendConfig.healthCheck.healthyThreshold"
-    value = "1"
-  }
-
-  set {
-    name = "server.ingress.gke.backendConfig.healthCheck.unhealthyThreshold"
-    value = "2"
-  }
-
-  set {
-    name = "server.ingress.gke.backendConfig.healthCheck.type"
-    value = "HTTP"
-  }
-
-  set {
-    name = "server.ingress.gke.backendConfig.healthCheck.port"
-    value = "8080"
-  }
-
-  set {
-    name = "server.ingress.gke.frontendConfig.redirectToHttps.enabled"
-    value = "true"
-  }
-
-  set {
-    name = "server.ingress.gke.managedCertificate.enabled"
-    value = "true"
-  }
+    })
+  ]
 
   depends_on = [
     google_container_cluster.autopilot
@@ -98,4 +101,23 @@ resource "kubernetes_secret" "argocd_repo_creds" {
   depends_on = [
     helm_release.argocd
   ]
+}
+
+resource "kubernetes_secret" "google_oauth" {
+  metadata {
+    name      = "google-oauth-secret"
+    namespace = "argocd"
+  }
+
+  data = {
+    clientSecret = "placeholder"
+  }
+
+  depends_on = [
+    google_container_cluster.autopilot
+  ]
+
+  lifecycle {
+    ignore_changes = [data]
+  }
 }

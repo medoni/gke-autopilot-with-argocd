@@ -83,3 +83,8 @@ variable "argocd_repo_git_pat" {
   sensitive   = true
   default     = "pat1234"
 }
+
+variable "google_auth_client_id" {
+  description = "Client ID for authenticating with Google Auth against ArgoCD DEX"
+  type        = string
+}
