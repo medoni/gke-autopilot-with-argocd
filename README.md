@@ -43,5 +43,5 @@ terraform destroy --var-file=default.tfvars
 ```
 
 ## Related Articles
-- Comming soon
+- [Setting up GKE Autopilot with Terraform and ArgoCD](https://medium.com/itnext/setting-up-gke-autopilot-with-terraform-and-argocd-12b3e7dd840b)
 
