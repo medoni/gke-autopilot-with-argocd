@@ -70,3 +70,8 @@ variable "argocd_version" {
   type        = string
   default     = "8.0.17"
 }
+
+variable "argocd_use_spot_instances" {
+  description = "True/false to use Google Clouds spot instances."
+  type        = bool
+}
