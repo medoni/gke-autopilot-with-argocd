@@ -20,4 +20,6 @@ release_channel = "REGULAR"  # Other options: RAPID, STABLE
 # node_service_account = "your-service-account@your-project.iam.gserviceaccount.com"
 
 dns_zone_name = "gke-autopilot"
+
 argocd_domain = "argocd.gke-auto.squirreldev.de"
+argocd_use_spot_instances = true

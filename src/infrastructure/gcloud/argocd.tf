@@ -11,6 +11,20 @@ resource "helm_release" "argocd" {
     yamlencode({
       global = {
         domain = var.argocd_domain
+        nodeSelector = var.argocd_use_spot_instances ? {
+          "cloud.google.com/gke-spot" = "true"
+        } : {}
+
+        affinity = var.argocd_use_spot_instances ? {
+          nodeAffinity = {
+            matchExpressions = {
+              "cloud.google.com/gke-spot" = {
+                operator = "in"
+                values = [ "true" ]
+              }
+            }
+          }
+        } : {}
       }
 
       configs = {
