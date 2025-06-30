@@ -1,0 +1,14 @@
+namespaces:
+  2025-demo-app1:
+    admins: [ meichhorn.squirrelsoft@gmail.com ]
+    contributors: []
+    readers: []
+  2025-demo-app2:
+    admins:
+      - dev3@example.com
+    contributors:
+      - dev1@example.com
+      - dev2@example.com
+    readers:
+      - project-manager1@example.com
+      - project-manager2@example.com

@@ -18,6 +18,32 @@ resource "helm_release" "argocd" {
           # Disable internal TLS since the GKE ingress handles TLS termination
           "server.insecure" = true
         }
+
+        rbac = {
+          "policy.csv" = local.argocd_rbac_csv
+          scopes = "[email]"
+        }
+
+        cm = {
+          "dex.config" = yamlencode({
+            connectors = [{
+              type = "oidc"
+              id = "google"
+              name = "Google"
+              config = {
+                issuer = "https://accounts.google.com"
+                clientID = var.google_auth_client_id
+                clientSecret = "$google.clientSecret"
+                requestedScopes = ["openid", "profile", "email"]
+                requestedIDTokenClaims = {
+                  email = {
+                    essential = true
+                  }
+                }
+              }
+            }]
+          })
+        }
       }
 
       server = {
