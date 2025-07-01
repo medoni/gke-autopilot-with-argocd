@@ -11,30 +11,39 @@ resource "helm_release" "argocd" {
     yamlencode({
       global = {
         domain = var.argocd_domain
-        nodeSelector = var.argocd_use_spot_instances ? {
-          "cloud.google.com/gke-spot" = "true"
-        } : {}
-
+        nodeSelector = {}        
         affinity = var.argocd_use_spot_instances ? {
           nodeAffinity = {
-            matchExpressions = {
-              "cloud.google.com/gke-spot" = {
-                operator = "in"
-                values = [ "true" ]
+            preferredDuringSchedulingIgnoredDuringExecution = [
+              {
+                weight = 100
+                preference = {
+                  matchExpressions = [
+                    {
+                      key = "cloud.google.com/gke-spot"
+                      operator = "In"
+                      values = ["true"]
+                    }
+                  ]
+                }
               }
-            }
+            ]
           }
         } : {}
       }
 
       configs = {
         params = {
-          # Disable internal TLS since the GKE ingress handles TLS termination
           "server.insecure" = true
         }
       }
 
       server = {
+        resources = {
+          requests = var.argocd_resources.server.requests
+          limits   = var.argocd_resources.server.limits
+        }
+
         ingress = {
           enabled = true
           controller = "gke"
@@ -50,11 +59,38 @@ resource "helm_release" "argocd" {
               }
             }
 
-            # Enable Google Managed SSL Certificate
             managedCertificate = {
               enabled = true
             }
           }
+        }
+      }
+
+      controller = {
+        resources = {
+          requests = var.argocd_resources.controller.requests
+          limits   = var.argocd_resources.controller.limits
+        }
+      }
+
+      dex = {
+        resources = {
+          requests = var.argocd_resources.dex.requests
+          limits   = var.argocd_resources.dex.limits
+        }
+      }
+
+      redis = {
+        resources = {
+          requests = var.argocd_resources.redis.requests
+          limits   = var.argocd_resources.redis.limits
+        }
+      }
+
+      repoServer = {
+        resources = {
+          requests = var.argocd_resources.repo_server.requests
+          limits   = var.argocd_resources.repo_server.limits
         }
       }
     })
