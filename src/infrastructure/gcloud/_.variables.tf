@@ -70,17 +70,6 @@ variable "dns_zone_name" {
   type        = string
 }
 
-variable "argocd_domain" {
-  description = "Public domain for argocd"
-  type        = string
-}
-
-variable "argocd_version" {
-  description = "Version of ArgoCD to deploy"
-  type        = string
-  default     = "8.0.17"
-}
-
 variable "google_auth_client_id" {
   description = "Client ID for authenticating with Google Auth against ArgoCD DEX"
   type        = string
