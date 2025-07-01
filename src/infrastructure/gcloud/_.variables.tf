@@ -59,19 +59,3 @@ variable "dns_zone_name" {
   description = "The zone name (DNS) to add sub domains"
   type        = string
 }
-
-variable "argocd_domain" {
-  description = "Public domain for argocd"
-  type        = string
-}
-
-variable "argocd_version" {
-  description = "Version of ArgoCD to deploy"
-  type        = string
-  default     = "8.0.17"
-}
-
-variable "argocd_use_spot_instances" {
-  description = "True/false to use Google Clouds spot instances."
-  type        = bool
-}
