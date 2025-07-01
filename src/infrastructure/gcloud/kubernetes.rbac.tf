@@ -24,6 +24,8 @@ resource "kubernetes_role" "reader" {
     resources  = ["*"]
     verbs      = ["get", "list", "watch"]
   }
+
+  depends_on = [ kubernetes_namespace.project_namespaces ]
 }
 
 # Contributor Role
@@ -71,6 +73,8 @@ resource "kubernetes_role" "contributor" {
       resource_names = []
     }
   }
+
+  depends_on = [ kubernetes_namespace.project_namespaces ]
 }
 
 # Admin Role
@@ -87,6 +91,8 @@ resource "kubernetes_role" "admin" {
     resources  = ["*"]
     verbs      = ["*"]
   }
+
+  depends_on = [ kubernetes_namespace.project_namespaces ]
 }
 
 # RoleBindings for Reader
@@ -117,6 +123,8 @@ resource "kubernetes_role_binding" "readers" {
     kind = "User"
     name = each.value.user
   }
+
+  depends_on = [ kubernetes_namespace.project_namespaces ]
 }
 
 # RoleBindings ffor Contributors
@@ -147,6 +155,8 @@ resource "kubernetes_role_binding" "contributors" {
     kind = "User"
     name = each.value.user
   }
+
+  depends_on = [ kubernetes_namespace.project_namespaces ]
 }
 
 # RoleBindings for Admins
@@ -177,4 +187,6 @@ resource "kubernetes_role_binding" "admins" {
     kind = "User"
     name = each.value.user
   }
+
+  depends_on = [ kubernetes_namespace.project_namespaces ]
 }
