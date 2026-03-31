@@ -55,23 +55,22 @@ variable "node_service_account" {
   default     = null  # Will use the default compute service account
 }
 
+variable "rbac_policy" {
+  description = "RBAC policy strictness"
+  type        = string
+  default     = "flexible"
+  validation {
+    condition     = contains(["flexible", "strict"], var.rbac_policy)
+    error_message = "RBAC policy must be either 'flexible' or 'strict'."
+  }
+}
+
 variable "dns_zone_name" {
   description = "The zone name (DNS) to add sub domains"
   type        = string
 }
 
-variable "argocd_domain" {
-  description = "Public domain for argocd"
+variable "google_auth_client_id" {
+  description = "Client ID for authenticating with Google Auth against ArgoCD DEX"
   type        = string
-}
-
-variable "argocd_version" {
-  description = "Version of ArgoCD to deploy"
-  type        = string
-  default     = "8.0.17"
-}
-
-variable "argocd_use_spot_instances" {
-  description = "True/false to use Google Clouds spot instances."
-  type        = bool
 }

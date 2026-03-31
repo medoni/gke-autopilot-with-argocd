@@ -23,3 +23,6 @@ dns_zone_name = "gke-autopilot"
 
 argocd_domain = "argocd.gke-auto.squirreldev.de"
 argocd_use_spot_instances = true
+
+google_auth_client_id = "822202985209-c0inf8vdkpuk2q9lirljnmpsretl74vi.apps.googleusercontent.com"
+rbac_policy = "flexible"
